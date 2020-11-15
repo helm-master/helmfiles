@@ -1,0 +1,27 @@
+repositories:
+  - name: externaldns
+    url: git+https://github.com/helm-master/externaldns-helm@externaldns-chart?ref=main
+
+environments:
+  default:
+    values:
+      - extraargs:
+          - --txt-owner-id=changeme4
+          - --txt-prefix=changeme4
+          - --domain-filter=alnk.eu
+          - --provider=dnsimple
+        env:
+          - name: DNSIMPLE_OAUTH
+            value: "changeme4"
+
+releases:
+  - name: externaldns
+    namespace: externaldns
+    createNamespace: true                  
+    chart: externaldns/externaldns-chart
+    values:
+      - externaldns: 
+          extraargs:
+            {{- toYaml .Values.extraargs | nindent 12 }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}

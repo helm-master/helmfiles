@@ -1,0 +1,29 @@
+repositories:
+  - name: incubator
+    url: https://charts.helm.sh/incubator
+
+helmfiles:
+  - path: ./nfs-server-provisioner.yaml
+
+releases:
+  - name: artifacts
+    chart: incubator/raw
+    values:
+    - resources:
+      - apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: foo
+      - apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: foo-pvc
+          namespace: foo
+        spec:
+          storageClassName: "nfs" 
+          resources:
+            requests:
+              storage: 0.8Gi
+          accessModes:
+            - ReadWriteOnce
+            - ReadWriteMany

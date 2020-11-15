@@ -1,0 +1,30 @@
+repositories:
+  - name: jupyterhub
+    url: https://jupyterhub.github.io/helm-chart/
+  - name: stable
+    url: https://charts.helm.sh/stable
+
+environments:
+  default:
+
+helmDefaults:
+  timeout: 4000
+
+releases:
+  - name: nfs-server
+    chart: stable/nfs-server-provisioner
+    namespace: nfs
+    values:
+      - persistence:
+          enabled: true
+          size: 500Gi
+        #storageClass:
+          #mountOptions: 
+          #  - "{vers=4}"
+
+  - name: jhub
+    chart: jupyterhub/jupyterhub
+    namespace: jhub
+    values:
+      - ./config-{{ .Environment.Name }}.yaml
+      - version: 5197709e9f23

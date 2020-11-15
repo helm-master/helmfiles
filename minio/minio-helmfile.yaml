@@ -1,0 +1,19 @@
+repositories:
+  - name: minio
+    url: https://helm.min.io/
+
+releases:
+  - name: minio
+    namespace: {{ .Values | get "namespace" "default" }}
+    chart: minio/minio
+    values:
+      - persistence:
+          size: 5Gi
+        accessKey: {{ .Values | get "accessKey" "minio" }}
+        secretKey: {{ .Values | get "secretKey" "minio123" }}
+        resources:
+          requests:
+            memory: 0.1Gi
+        defaultBucket:
+          enabled: true
+          name: {{ .Values | get "bucket" "default" }}

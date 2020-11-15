@@ -1,0 +1,81 @@
+repositories:
+  - name: incubator2
+    url: https://charts.helm.sh/incubator
+
+helmfiles:
+  - path: git::https://github.com/helm-master/helmfiles.git@externaldns/externaldns-helmfile.yaml?ref=main
+  #- path: ./externaldns-helmfile.yaml
+    values:
+      - extraargs:
+          - --txt-owner-id=gproduction
+          - --txt-prefix=gproduction
+          - --domain-filter=changeme.cloud
+          - --provider=dnsimple
+        env:
+          - name: DNSIMPLE_OAUTH
+            value: "changeme"
+
+releases:
+  - name: rawraw
+    chart: incubator2/raw
+    namespace: jhub
+    values:
+    - resources:
+      - apiVersion: v1
+        kind: Service
+        metadata:
+          name: jhub-externaldns-service
+          annotations:
+            external-dns.alpha.kubernetes.io/hostname: jupyter.changeme.cloud
+        spec:
+          type: ExternalName
+          externalName: gproduction.changeme.cloud
+      - apiVersion: traefik.containo.us/v1alpha1
+        kind: Middleware
+        metadata:
+          name: redirect-https
+        spec:
+          redirectScheme:
+            scheme: https
+            permanent: true
+            port: "443"
+      - apiVersion: traefik.containo.us/v1alpha1
+        kind: IngressRoute
+        metadata:
+          name: jhubingressroute
+          namespace: jhub
+        spec:
+          entryPoints:
+            - web
+          routes:
+          # changeme
+          - match: Host(`jupyter.changeme.cloud`)
+            kind: Rule
+            services:
+            - name: proxy-public
+              port: 80
+            middlewares:
+            - name: redirect-https
+              namespace: jhub
+      - apiVersion: traefik.containo.us/v1alpha1
+        kind: IngressRoute
+        metadata:
+          name: jhubingressroutetls
+          namespace: jhub
+        spec:
+          entryPoints:
+            - websecure
+          routes:
+          # changeme
+          - match: Host(`jupyter.changeme.cloud`)
+            kind: Rule
+            services:
+            - name: proxy-public
+              port: 80
+          tls:
+            certResolver: le
+            domains:
+            - main: changeme.cloud
+              sans:
+              - "*.changeme.cloud"
+              - "*.local.cchangeme.cloud"

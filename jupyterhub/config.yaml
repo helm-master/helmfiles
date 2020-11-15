@@ -1,0 +1,162 @@
+proxy:
+  secretToken: "80ee7861cf9221e3c83a369f4fada2c3fb4fdbcec2bbc6058c2bda2146e17199"
+  https:
+    enabled: true
+    #type: offload
+    hosts:
+      - changeme.bla.com
+    type: secret
+    secret:
+      name: changeme
+  service:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: changeme.bla.com
+
+# The resources requested is very important to consider in
+# relation to your machine type. If you have a n1-highmem-4 node
+# on Google Cloud for example you get 4 cores and 26 GB of
+# memory. With the configuration below you would  be able to have
+# at most about 50 users per node. This can be reasonable, but it
+# may not be, it will depend on your users. Are they mostly
+# writing and reading or are they mostly executing code?
+singleuser:
+  cpu:
+    limit: 1
+    guarantee: 0.05
+  memory:
+    limit: 1G
+    guarantee: 512M
+  defaultUrl: "/lab"
+  image:
+    name: jupyter/r-notebook
+    tag: 5197709e9f23
+  storage:
+    dynamic:
+      storageClass: nfs
+  lifecycleHooks:
+    postStart:
+      exec:
+        command:
+          - "sh"
+          - "-c"
+          - >
+            pip install nbgitpuller; gitpuller https://git.imim.cat/jmcarbo/bioestadistica2020.git master biostat2020
+#gitpuller https://github.com/data-8/materials-fa17 master materials-fa;
+
+auth:
+  admin:
+    users:
+      - jmcarbo
+  type: dummy
+  dummy:
+    password: 'changeme'
+  whitelist:
+    users:
+      - jmcarbo
+      - U173211
+      - U173212
+      - U173216
+      - U173225
+      - U173226
+      - U161430
+      - U161444
+      - U161447
+      - U162198
+      - U172523
+      - U172530
+      - U172542
+      - U172560
+      - U173223
+      - U173214
+      - U173227
+      - U161418
+      - U161423
+      - U161436
+      - U161439
+      - U161440
+      - U161441
+      - U161450
+      - U172527
+      - U172528
+      - U172535
+      - U172548
+      - U172558
+      - U149976
+      - U149977
+      - U172982
+      - U161437
+      - U172533
+      - U172538
+      - U172539
+      - U172544
+      - U172555
+      - U172557
+      - U163171
+      - U174888
+      - U173213
+      - U173224
+      - U161414
+      - U161420
+      - U161421
+      - U161427
+      - U161431
+      - U172524
+      - U172532
+      - U172536
+      - U172525
+      - U173219
+      - U161416
+      - U161429
+      - U161432
+      - U161438
+      - U150410
+      - U173215
+      - U162413
+      - U172537
+      - U172554
+      - U161442
+      - U161443
+      - U161446
+      - U161449
+      - U162196
+      - U161401
+      - U161415
+      - U161417
+      - U161419
+      - U161425
+      - U172529
+      - U172540
+      - U172541
+      - U172543
+      - U172546
+      - U172549
+      - U172559
+      - U172522
+      - U172547
+      - U172550
+      - U172551
+      - U173222
+      - U161424
+      - U161426
+      - U161434
+      - U161445
+      - U161448
+      - U163169
+
+scheduling:
+  userScheduler:
+    enabled: true
+  podPriority:
+    enabled: true
+  userPlaceholder:
+    enabled: true
+    replicas: 4
+#  userPods:
+#    nodeAffinity:
+#      matchNodePurpose: require
+
+cull:
+  enabled: true
+  timeout: 3600
+  every: 300
+

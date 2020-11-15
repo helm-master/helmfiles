@@ -1,0 +1,192 @@
+repositories:
+  - name: incubator
+    url: https://charts.helm.sh/incubator
+
+helmfiles:
+  - path: git::https://github.com/helm-master/helmfiles.git@csi-rclone/csi-rclone-helmfile.yaml?ref=main
+  - path: git::https://github.com/helm-master/helmfiles.git@minio/minio-helmfile.yaml?ref=main
+    values:
+      - namespace: minio
+
+releases:
+  - name: volume
+    chart: incubator/raw
+    values:
+    - resources:
+      - apiVersion: v1
+        kind: PersistentVolume
+        metadata:
+          name: rclone-pv
+          labels:
+            name: rclone-pv
+        spec:
+          accessModes:
+          - ReadWriteMany
+          capacity:
+            storage: 1Gi
+          storageClassName: rclone
+          csi:
+            driver: csi-rclone
+            volumeHandle: data-id
+            volumeAttributes:
+              remote: "s3"
+              remotePath: "default2/bla"
+              s3-provider: "Minio"
+              s3-endpoint: "http://minio.minio:9000"
+              s3-access-key-id: "minio"
+              s3-secret-access-key: "minio123"
+      - apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: rclone-pv
+        spec:
+          storageClassName: rclone
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 1Gi
+          selector:
+            matchLabels:
+              name: rclone-pv
+      - apiVersion: v1
+        kind: Pod
+        metadata:
+          name: busybox
+        spec:
+          containers:
+          - name: busybox
+            image: busybox
+            stdin: true
+            tty: true
+            volumeMounts:
+            - name: rclone 
+              mountPath: /data
+          volumes:
+          - name: rclone
+            persistentVolumeClaim:
+              claimName: rclone-pv
+      - apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: busybox2
+      - apiVersion: v1
+        kind: PersistentVolume
+        metadata:
+          name: rclone-pv2
+          labels:
+            name: rclone-pv2
+        spec:
+          accessModes:
+          - ReadWriteMany
+          capacity:
+            storage: 1Gi
+          storageClassName: rclone
+          csi:
+            driver: csi-rclone
+            volumeHandle: data-id2
+            volumeAttributes:
+              remote: "s3"
+              remotePath: "default2/bla"
+              s3-provider: "Minio"
+              s3-endpoint: "http://minio.minio:9000"
+              s3-access-key-id: "minio"
+              s3-secret-access-key: "minio123"
+      - apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: rclone-pv2
+          namespace: busybox2
+        spec:
+          storageClassName: rclone
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 1Gi
+          selector:
+            matchLabels:
+              name: rclone-pv2
+      - apiVersion: v1
+        kind: Pod
+        metadata:
+          name: busybox2
+          namespace: busybox2
+        spec:
+          containers:
+          - name: busybox
+            image: busybox
+            stdin: true
+            tty: true
+            volumeMounts:
+            - name: rclone 
+              mountPath: /data2
+          volumes:
+          - name: rclone
+            persistentVolumeClaim:
+              claimName: rclone-pv2
+      - apiVersion: v1
+        kind: Pod
+        metadata:
+          name: postgres
+          namespace: busybox2
+        spec:
+          securityContext:
+            runAsUser: 999
+            supplementalGroups: [999,1000]
+            fsGroup: 999
+          containers:
+          - name: postgres
+            image: postgres:13
+            stdin: true
+            tty: true
+            env:
+              - name: POSTGRES_PASSWORD
+                value: mysecretpassword
+              - name: POSTGRES_DB
+                value: adatabase
+            volumeMounts:
+            - name: rclone 
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+          volumes:
+          - name: rclone
+            persistentVolumeClaim:
+              claimName: rclone-pv2
+      - apiVersion: v1
+        kind: PersistentVolume
+        metadata:
+          name: rclone-pv3
+          labels:
+            name: rclone-pv3
+        spec:
+          accessModes:
+          - ReadWriteMany
+          capacity:
+            storage: 1Gi
+          storageClassName: rclone
+          csi:
+            driver: csi-rclone
+            volumeHandle: data-id3
+            volumeAttributes:
+              remote: "s3"
+              remotePath: "changeme/changeme"
+              s3-provider: "wasabi"
+              s3-endpoint: "https://s3.eu-central-1.wasabisys.com"
+              s3-access-key-id: "changeme"
+              s3-secret-access-key: "changeme"
+      - apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: rclone-pv3
+          namespace: busybox3
+        spec:
+          storageClassName: rclone
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 1Gi
+          selector:
+            matchLabels:
+              name: rclone-pv3

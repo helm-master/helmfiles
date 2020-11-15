@@ -1,0 +1,9 @@
+helmfiles:
+  - path: ./minio-helmfile.yaml
+    values:
+      - accessKey: myminio
+        namespace: minio1
+  - path: ./minio-helmfile.yaml
+    values:
+      - accessKey: myminio2
+        namespace: minio2

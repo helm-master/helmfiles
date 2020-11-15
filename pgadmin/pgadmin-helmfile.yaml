@@ -1,0 +1,10 @@
+repositories:
+  - name: pgadmin
+    url: git+https://github.com/helm-master/pgadmin-helm@pgadmin-chart?ref=main
+
+
+releases:
+  - name: pgadmin                            # name of this release
+    namespace: pgadmin                       # target namespace
+    createNamespace: true                  
+    chart: pgadmin/pgadmin

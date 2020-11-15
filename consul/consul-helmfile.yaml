@@ -1,0 +1,33 @@
+repositories:
+  - name: hashicorp
+    url: https://helm.releases.hashicorp.com
+
+environments:
+  default:
+    values:
+    - extraValues:
+        aa: 23
+        bb: 55
+      afilename: blu
+releases:
+  - name: consul
+    chart: hashicorp/consul
+    values:
+      - global:
+          domain: consul
+          datacenter: dc1
+        
+        server:
+          replicas: 1
+          bootstrapExpect: 1
+        
+        client:
+          enabled: true
+          grpc: true
+        
+        ui:
+          enabled: true
+        
+        connectInject:
+          enabled: true
+      - ./{{.Values.afilename}}.yaml 

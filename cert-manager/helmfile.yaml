@@ -1,0 +1,34 @@
+repositories:
+  - name: raw
+    url: git+https://github.com/helm-master/raw-helm@raw-chart?ref=main
+
+helmfiles:
+  - path: git::https://github.com/helm-master/helmfiles.git@cert-manager/cert-manager-helmfile.yaml?ref=main
+    values:
+      - installCRDs: true
+  - path: git::https://github.com/helm-master/helmfiles.git@cert-manager/cert-manager-webhook-dnsimple.yaml?ref=main
+    values:
+      - dnsimple:
+          account: "changeme"
+          token: "changeme"
+          email: "changeme"
+
+releases:
+  - name: rawraw
+    chart: raw/raw
+    namespace: faxer
+    values:
+    - resources:
+      - apiVersion: cert-manager.io/v1alpha3
+        kind: Certificate
+        metadata:
+          name: imimcloud
+          namespace: faxer
+        spec:
+          dnsNames:
+          - "imim.cloud"
+          - "*.imim.cloud"
+          issuerRef:
+            name: cert-manager-webhook-dnsimple-production
+            kind: ClusterIssuer
+          secretName: imimcloud

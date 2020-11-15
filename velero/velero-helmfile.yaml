@@ -1,0 +1,87 @@
+repositories:
+  - name: vmware-tanzu
+    url: https://vmware-tanzu.github.io/helm-charts
+  - name: minio
+    url: https://helm.min.io/
+
+environments:
+  default:
+    values:
+      - miniodeploy:
+          enabled: false
+        accessKey: minio
+        secretKey: minio123a
+  development:
+    values:
+      - miniodeploy:
+          enabled: true
+        accessKey: minio
+        secretKey: minio123b
+        bucket: velero
+        region: minio
+        s3ForcePathStyle: true
+        s3Url: http://minio.minio:9000 
+        publicUrl: http://minio.minio:9000 
+  production:
+    values:
+      - miniodeploy:
+          enabled: false
+        accessKey: changeme
+        secretKey: changeme
+        bucket: velero
+        region: us-east-1
+        s3ForcePathStyle: true
+        s3Url: https://s3.us-east-1.wasabisys.com
+        publicUrl: https://s3.us-east-1.wasabisys.com
+
+releases:
+  - name: velero
+    namespace: velero
+    createNamespace: true
+    chart: vmware-tanzu/velero
+    values:
+      - image:
+          repository: velero/velero
+          tag: v1.5.1
+          pullPolicy: IfNotPresent
+        deployRestic: true
+        snapshotsEnabled: false
+        credentials:
+          secretContents:
+            cloud: |
+              [default]
+              aws_access_key_id = {{ .Values.accessKey }}
+              aws_secret_access_key = {{ .Values.secretKey }}
+        configuration:
+          provider: aws
+          defaultVolumesToRestic: true
+          backupStorageLocation:
+            name: default
+            provider: aws
+            bucket: {{ .Values.bucket }}
+            config:
+              region: {{ .Values.region }}
+              s3ForcePathStyle: {{ .Values.s3ForcePathStyle }}
+              s3Url: {{ .Values.s3Url }}
+              publicUrl: {{ .Values.publicUrl }} 
+        initContainers:
+        - name: velero-plugin-for-aws
+          image: velero/velero-plugin-for-aws:v1.1.0
+          volumeMounts:
+            - name: plugins
+              mountPath: /target 
+  - name: minio
+    namespace: minio
+    chart: minio/minio
+    condition: miniodeploy.enabled
+    values:
+      - persistence:
+          size: 5Gi
+        accessKey: {{ .Values.accessKey }}
+        secretKey: {{ .Values.secretKey }}
+        resources:
+          requests:
+            memory: 0.1Gi
+        defaultBucket:
+          enabled: true
+          name: {{ .Values.bucket }}

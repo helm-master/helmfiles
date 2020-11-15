@@ -1,0 +1,11 @@
+repositories:
+  - name: csi-rclone
+    url: git+https://github.com/helm-master/csi-rclone-helm@csi-rclone-chart?ref=main
+  - name: incubator
+    url: https://charts.helm.sh/incubator
+
+releases:
+  - name: csi-rclone
+    chart: csi-rclone/csi-rclone-chart
+    namespace: csi-rclone
+    createNamespace: true

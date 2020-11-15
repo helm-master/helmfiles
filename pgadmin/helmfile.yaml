@@ -1,0 +1,89 @@
+repositories:
+  - name: pgadmin
+    url: git+https://github.com/helm-master/pgadmin-helm@pgadmin-chart?ref=main
+  - name: stable
+    url: https://charts.helm.sh/stable
+  - name: incubator
+    url: https://charts.helm.sh/incubator
+  - name: traefik
+    url: https://helm.traefik.io/traefik
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+helmfiles:
+  - path: git::https://github.com/helm-master/helmfiles.git@traefik/traefik-helmfile.yaml?ref=main
+  - path: git::https://github.com/helm-master/helmfiles.git@pgadmin/pgadmin-helmfile.yaml?ref=main
+
+releases:
+  - name: postgres
+    namespace: postgres
+    chart: bitnami/postgresql
+    values:
+      - postgresqlDatabase: changeme
+      - postgresqlPassword: changeme
+      - postgresqlUsername: changeme
+      - postgresqlPostgresPassword: changeme
+      - image:
+          tag: 13.0.0
+
+  - name: raw1
+    chart: incubator/raw
+    namespace: pgadmin
+    createNamespace: true                  
+    values:
+    - resources:
+      - apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: raw1
+        data:
+          foo: FOO
+      - apiVersion: traefik.containo.us/v1alpha1
+        kind: Middleware
+        metadata:
+          name: redirect-https
+        spec:
+          redirectScheme:
+            scheme: https
+            permanent: true
+            port: "443"
+      - apiVersion: traefik.containo.us/v1alpha1
+        kind: IngressRoute
+        metadata:
+          name: pgadminingressroute
+          namespace: pgadmin
+        spec:
+          entryPoints:
+            - web
+          routes:
+          # changeme
+          - match: Host(`pgadmin.alnk.eu`)
+            kind: Rule
+            services:
+            - name: pgadmin
+              port: 80
+            middlewares:
+            - name: redirect-https
+              namespace: default
+      - apiVersion: traefik.containo.us/v1alpha1
+        kind: IngressRoute
+        metadata:
+          name: pgadminingressroutetls
+          namespace: pgadmin
+        spec:
+          entryPoints:
+            - websecure
+          routes:
+          # changeme
+          - match: Host(`pgadmin.alnk.eu`)
+            kind: Rule
+            services:
+            - name: pgadmin
+              port: 80
+          tls:
+            certResolver: le
+            domains:
+            - main:  alnk.eu
+              sans:
+              - "*.alnk.eu"
+              - "*.local.alnk.eu"

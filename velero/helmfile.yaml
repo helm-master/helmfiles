@@ -1,0 +1,27 @@
+repositories:
+  - name: incubator
+    url: https://charts.helm.sh/incubator
+
+environments:
+  development:
+
+helmfiles:
+  - path: ./velero-helmfile.yaml
+
+releases:
+  - name: raw1
+    chart: incubator/raw
+    values:
+    - resources:
+      - apiVersion: velero.io/v1
+        kind: Schedule
+        metadata:
+          name: minio
+          namespace: velero
+        spec:
+          schedule: '@every 24h'
+          template:
+            hooks: {}
+            includedNamespaces:
+            - minio
+            ttl: 720h0m0s

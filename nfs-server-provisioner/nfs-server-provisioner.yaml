@@ -1,0 +1,12 @@
+repositories:
+  - name: stable
+    url: https://charts.helm.sh/stable
+
+releases:
+  - name: nfs-server-provisioner
+    chart: stable/nfs-server-provisioner
+    namespace: {{ .Values | get "namespace" "default" }}
+    values:
+      - storageClass:
+          mountOptions:
+            - "vers=4" # needed to avoid using rpcbind and being able to use it in k3d
