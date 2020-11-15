@@ -2,16 +2,15 @@ repositories:
   - name: raw
     url: git+https://github.com/helm-master/raw-helm@raw-chart?ref=main
 
-helmfiles:
-  - path: git::https://github.com/helm-master/helmfiles.git@cert-manager/cert-manager-helmfile.yaml?ref=main
-    values:
-      - installCRDs: true
-  - path: git::https://github.com/helm-master/helmfiles.git@cert-manager/cert-manager-webhook-dnsimple.yaml?ref=main
-    values:
-      - dnsimple:
-          account: "changeme"
-          token: "changeme"
-          email: "changeme"
+#helmfiles:
+#  - path: git::https://github.com/helm-master/helmfiles.git@cert-manager/cert-manager-helmfile.yaml?ref=main
+#    values:
+#    values:
+#      - dnsimple:
+#          account: "changeme"
+#          token: "changeme"
+#          email: "changeme"
+#        installCRDs: true
 
 releases:
   - name: rawraw
