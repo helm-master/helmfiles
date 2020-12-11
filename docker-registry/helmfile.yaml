@@ -12,3 +12,6 @@ releases:
         size: 20Gi
         storageClass: nfs
         accessMode: ReadWriteMany
+      secrets:
+        # htpasswd -Bnb jmcarbo blabla
+        htpasswd: "jmcarbo:$2y$05$94vPwEFnzswmPByYEmhI/.n40BXJmFGdWxlNlkgl1.Jz8pt.nLdzO" 
