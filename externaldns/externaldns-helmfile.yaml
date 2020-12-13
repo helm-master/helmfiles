@@ -28,3 +28,6 @@ releases:
             {{- toYaml .Values.extraargs | nindent 12 }}
           env:
             {{- toYaml .Values.env | nindent 12 }}
+        image:
+          repository: {{ .Values.image.repository }} 
+          tag: {{ .Values.image.tag }}
