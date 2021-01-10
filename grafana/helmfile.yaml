@@ -1,0 +1,27 @@
+repositories:
+  - name: grafana
+    url: git+https://github.com/grafana/helm-charts@charts/grafana?ref=main
+
+releases:
+  - name: grafana
+    chart: grafana/grafana
+    namespace: grafana
+    values:
+    - imageRenderer:
+        enabled: true
+      plugins:
+        - grafana-clock-panel
+        - grafana-worldmap-panel
+        - flant-statusmap-panel
+        - citilogics-geoloop-panel
+        - macropower-analytics-panel
+        - ryantxu-ajax-panel
+        - grafana-simple-json-datasource
+        - simpod-json-datasource
+        - marcusolsson-json-datasource
+        #- grafana-github-datasource
+        - verticle-flowhook-datasource
+        - marcusolsson-csv-datasource
+      adminPassword: blablabla
+      persistence:
+        enabled: true
