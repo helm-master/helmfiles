@@ -9,6 +9,8 @@ releases:
     values:
     - imageRenderer:
         enabled: true
+      image:
+        tag: 7.3.7
       plugins:
         - grafana-clock-panel
         - grafana-worldmap-panel
