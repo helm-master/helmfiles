@@ -1,0 +1,27 @@
+repositories:
+  - name: raw
+    url: git+https://github.com/helm-master/raw-helm@raw-chart?ref=main
+
+helmDefaults:
+  createNamespace: true
+
+releases:
+  - name: certificate
+    chart: raw/raw
+    namespace: maddy
+    values:
+    - resources:
+      - apiVersion: cert-manager.io/v1
+        kind: Certificate
+        metadata:
+          name: maddy
+          namespace: maddy
+        spec:
+          dnsNames:
+          - "imim.cloud"
+          - "*.imim.cloud"
+          issuerRef:
+            name: cert-manager-webhook-dnsimple-production
+            kind: ClusterIssuer
+          secretName: maddy
+

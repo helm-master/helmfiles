@@ -11,6 +11,8 @@ releases:
         enabled: true
       image:
         tag: 7.3.7
+      deploymentStrategy: 
+        type: Recreate
       plugins:
         - grafana-clock-panel
         - grafana-worldmap-panel
