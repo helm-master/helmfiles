@@ -1,6 +1,6 @@
 repositories:
     #- name: maddy
-    #url: git+https://github.com/jmcarbo/maddy@contrib/kubernetes/chart?ref=master
+    #url: git+https://github.com/helm-master/helmfiles@maddy/chart?ref=master
 
 helmDefaults:
   createNamespace: true
@@ -8,7 +8,7 @@ helmDefaults:
 releases:
   - name: maddy
     #chart: maddy/maddy
-    chart: ../contrib/kubernetes/chart
+    chart: ./chart
     namespace: maddy
     labels:
       server: true
@@ -22,15 +22,51 @@ releases:
         accessMode: ReadWriteMany
         size: 10Gi
         storageClass: "nfs"
+        annotations:
+          helm.sh/resource-policy: "keep"
       service:
         type: ClusterIP
       deployment:
         type: DaemonSet
+      dkim:
+        key: |
+          -----BEGIN PRIVATE KEY-----
+          MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCzQt2pvf2J4yfc
+          xhe1x5GmyODw49HiCRxJ9OuqsbP9IXx1Y1NA0WY76OH50Nhi955qhXFrxYJa9YD5
+          wHCOTJo7c7PNo6HFaH0Ae7wJozUnFpIX6BHb9V/rxuUTcKr0zxluUPSyCLMfAj9B
+          SIuuyST4CBh/K7S5LFc5EG0dPbHb+ZkjW6L7SEloO+iRUdnNSp937j9gqAdV5zui
+          geTF83a+hrNdBL+IBBjdhUUJDEkxYImJMxXb3/O9mfgY36Tufryb0zRbw8MgS95u
+          exq6DqLdwx9iinxPOpM7tvOXEQx0Qhs8w6ikSA27n2rTRGE2NDxXasnmyh1j3Qfj
+          GvapO2HrAgMBAAECggEAUcggro8B+4VJq1wodwMcPPYKQXv+RdwYLtlxJse5sLM1
+          P6zXz4t40740Ui9oeQY1HK3Sh/NsvCii9c5Iy3LBLnxjvF55sEEyPiU1LURrPHD8
+          p7F1bF8uqrdrzQmqxNMy6/Q9Hnf/mBcDWrpJF62mkw3Gd0YuRginpl4LGbsKyKr7
+          +sfVNqr42eXifRUvZXGJewKl2bXTaS72kgqL4EYdNbgMfM+Q28j+EtzyR14N9RcH
+          l6DQd9aGXR5w0NZx1zxIzIgtYRbnEoMLT3eIwlD/sRagF0R4gSEsnV1Fm7Im2qHL
+          IM1kUWXq/VX0AlYDtrLrTjny1pOKwY9yzUecfeJcmQKBgQDgKzaui0VrbmwGV11x
+          KFACxiIrbExJqWYybtTKuq9hR5Qb+V6I7mhlMaX9Ai1FVGXCZHcVbXMXrGSiPUVl
+          rxfzQsaYpjsqLS0/Bm0tJf1bYnQvWBpJ4xMh4ba82dH8w8dlWdmZN4khC6Y/gYyg
+          t1jZov7P79IbdMYQf4oOduhftwKBgQDMtzXmPuoISoef074Rt01znf3nAAgHE8B+
+          Ab2cO7GQZJryhHwU7AvDvDeZS9HCEgFSdhjbg6jRlxaDHXF8QXslpBRkWjudG3sL
+          TWs6W0baQxPzj4yiQ8t4YpKRKhuRAWlxUvZ7oGhowDu8r2EIsbGTlbuanK10OIRc
+          qhsrtHhnbQKBgE/btTA7FzDtdnhP2U79kHtcgEG94/N98JVY3F+YX/Ak4sOQc7gO
+          Tox2Qm6+vsfrCBFXXwD4K78sP/F4KGfQF5Umnb81wPAGhg7kyDIETZynl0JifYMC
+          7Qbt9P6UDnWgfUFC3/zwRt7J2qDXEvUSPAnUQjhrdAsp74FjHhiHDcNDAoGAacuh
+          Gk2XSxOhRZL7HlK5vy9+QPw+KdImX7hskiozWKj1frHDIljet5g0r4+EZqRBdKk9
+          rWw8OZy4cKgttwZsKwbB1x7ewhGqpCutZ6o2UqPp0qx0BIO+yoc+sbCuMGEnaf5z
+          DW7XppL6DEgigIi8ecYe/wdLiM2QcgcjJZINy30CgYBAM+qwPNciZDHbYde/sPYF
+          pjmD1lGrOD5hJ4kKavDcxG5TezCURQkWf14HB938Zldn3KOC9a6lbiWsutIfLcMd
+          6uBQjX0FGdygrbKFodUmoqeco8QxX8AkqXSunuZUK+hxz/efjz+B5Ji63qXsq6Xw
+          Sk4tDtualQ5rzNvcIyRPOw==
+          -----END PRIVATE KEY-----
+        dns: v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs0Ldqb39ieMn3MYXtceRpsjg8OPR4gkcSfTrqrGz/SF8dWNTQNFmO+jh+dDYYveeaoVxa8WCWvWA+cBwjkyaO3OzzaOhxWh9AHu8CaM1JxaSF+gR2/Vf68blE3Cq9M8ZblD0sgizHwI/QUiLrskk+AgYfyu0uSxXORBtHT2x2/mZI1ui+0hJaDvokVHZzUqfd+4/YKgHVec7ooHkxfN2voazXQS/iAQY3YVFCQxJMWCJiTMV29/zvZn4GN+k7n68m9M0W8PDIEvebnsaug6i3cMfYop8TzqTO7bzlxEMdEIbPMOopEgNu59q00RhNjQ8V2rJ5sodY90H4xr2qTth6wIDAQAB
+      # password obtained with maddyctl hash -p <password>
       users: |
-        pepe@imim.cloud:bcrypt:$2a$10$b8TdXo5Nk/dN4y5a4pzAweonK2wjxzIO1Df7Gwh100NvOlPzFvMUG
+        pepe@bla.cloud:bcrypt:$2a$10$b8TdXo5Nk/dN4y5a4pzAweonK2wjxzIO1Df7Gwh100NvOlPzFvMUG
         pepe:bcrypt:$2a$10$b8TdXo5Nk/dN4y5a4pzAweonK2wjxzIO1Df7Gwh100NvOlPzFvMUG
+        maria:bcrypt:$2a$10$AAnoHAP0U/Zed9yLh6BBVeU1D8foyIGc/ygg20TUz8ytOJ9s9Gafu
+        maria@bla.cloud:bcrypt:$2a$10$AAnoHAP0U/Zed9yLh6BBVeU1D8foyIGc/ygg20TUz8ytOJ9s9Gafu
       aliases: |
-        jmcarbo@imim.cloud: jmcarbo@imim.es
+        maria@bla.cloud: bla@bla.com
       config: |
         ## Maddy Mail Server - default configuration file (2020-10-11)
         # Suitable for small-scale deployments. Uses its own format for local users DB,
@@ -45,8 +81,8 @@ releases:
         # ----------------------------------------------------------------------------
         # Base variables
         
-        $(hostname) = imim.cloud
-        $(primary_domain) = imim.cloud
+        $(hostname) = bla.cloud
+        $(primary_domain) = bla.cloud
         $(local_domains) = $(primary_domain)
         
         #tls file /etc/maddy/certs/$(hostname)/fullchain.pem /etc/maddy/certs/$(hostname)/privkey.pem
@@ -150,6 +186,7 @@ releases:
         }
         
         submission tls://0.0.0.0:465 tcp://0.0.0.0:587 {
+            debug yes
             limits {
                 # Up to 50 msgs/sec across any amount of SMTP connections.
                 all rate 50 1s
@@ -163,7 +200,11 @@ releases:
                 }
                 default_destination {
                     modify {
-                        dkim $(primary_domain) $(local_domains) default
+                        dkim {
+                          domains $(primary_domain) $(local_domains) 
+                          selector default
+                          key_path /data/dkim_key
+                        }
                     }
                     deliver_to &remote_queue
                 }

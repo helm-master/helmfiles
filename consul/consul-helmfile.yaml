@@ -1,3 +1,4 @@
+#https://www.consul.io/docs/k8s/helm
 repositories:
   - name: hashicorp
     url: https://helm.releases.hashicorp.com
