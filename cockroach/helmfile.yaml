@@ -1,0 +1,14 @@
+repositories:
+  - name: cockroach
+    url: git+https://github.com/cockroachdb/helm-charts@cockroachdb?ref=master
+
+releases:
+  - name: cockroach
+    namespace: {{ .Values | get "namespace" "default" }}
+    chart: cockroach/cockroachdb
+    values:
+      - image:
+          repository: jmcarbo/cockroach 
+          tag: v20.2.4.1
+        tls:
+          enabled: false
