@@ -1,17 +1,11 @@
 repositories:
   - name: jetstack
     url: https://charts.jetstack.io
-  - name: webhook
-    url: git+https://github.com/neoskop/cert-manager-webhook-dnsimple@deploy/dnsimple?ref=master
 
 environments:
   default:
     values:
       - installCRDs: true
-        dnsimple:
-          account: "changeme"
-          token: "changeme"
-          email: "changeme"
 
 releases:
   - name: cert-manager
@@ -20,20 +14,3 @@ releases:
     chart: jetstack/cert-manager
     values:
       - installCRDs: {{ .Values.installCRDs }}
-  - name: cert-manager-webhook-dnsimple
-    namespace: cert-manager
-    createNamespace: true                  
-    chart: webhook/cert-manager-webhook-dnsimple
-    needs:
-    - cert-manager/cert-manager
-    values:
-      - dnsimple:
-          account: {{ .Values.dnsimple.account }}
-          token: {{ .Values.dnsimple.token }}
-        clusterIssuer:
-          production:
-            enabled: true 
-          staging:
-            enabled: true
-          email:
-            {{ .Values.dnsimple.email }}
