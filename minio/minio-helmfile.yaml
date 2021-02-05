@@ -8,9 +8,10 @@ releases:
     chart: minio/minio
     values:
       - persistence:
-          size: 5Gi
+          size: {{ .Values | get "size" "5Gi" }}
         accessKey: {{ .Values | get "accessKey" "minio" }}
         secretKey: {{ .Values | get "secretKey" "minio123" }}
+        mode: {{ .Values | get "mode" "standalone" }}
         resources:
           requests:
             memory: 0.1Gi
