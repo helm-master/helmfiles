@@ -1,6 +1,6 @@
 repositories:
-  - name: incubator
-    url: https://charts.helm.sh/incubator
+  - name: raw
+    url: git+https://github.com/helm-master/raw-helm@raw-chart?ref=main
 
 helmfiles:
   - path: git::https://github.com/helm-master/helmfiles.git@csi-rclone/csi-rclone-helmfile.yaml?ref=main
@@ -10,7 +10,7 @@ helmfiles:
 
 releases:
   - name: volume
-    chart: incubator/raw
+    chart: raw/raw
     values:
     - resources:
       - apiVersion: v1
