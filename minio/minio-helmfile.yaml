@@ -9,6 +9,8 @@ releases:
     values:
       - persistence:
           size: {{ .Values | get "size" "5Gi" }}
+        image:
+          tag: {{ .Values | get "tag" "edge" }} 
         accessKey: {{ .Values | get "accessKey" "minio" }}
         secretKey: {{ .Values | get "secretKey" "minio123" }}
         mode: {{ .Values | get "mode" "standalone" }}
